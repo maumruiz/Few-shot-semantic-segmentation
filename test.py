@@ -17,7 +17,7 @@ from dataloaders.customized import voc_fewshot, coco_fewshot
 from dataloaders.transforms import ToTensorNormalize
 from dataloaders.transforms import Resize
 from util.metric import Metric
-from util.utils import set_seed, CLASS_LABELS, get_bbox
+from util.utils import set_seed, CLASS_LABELS
 from config import ex
 
 
