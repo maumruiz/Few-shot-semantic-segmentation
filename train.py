@@ -97,7 +97,7 @@ def main(_run, _config, _log):
 
         # Forward and Backward
         optimizer.zero_grad()
-        query_pred, align_loss = model(support_images, support_fg_mask, support_bg_mask,
+        query_pred, align_loss, _ = model(support_images, support_fg_mask, support_bg_mask,
                                        query_images)
         query_loss = criterion(query_pred, query_labels)
         loss = query_loss + align_loss * _config['align_loss_scaler']
