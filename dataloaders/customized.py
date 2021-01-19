@@ -182,6 +182,7 @@ def voc_fewshot(base_dir, split, transforms, to_tensor, labels, n_ways, n_shots,
     # Choose the classes of queries
     cnt_query = np.bincount(random.choices(population=range(n_ways), k=n_queries), minlength=n_ways)
     # Set the number of images for each class
+    # TODO: solve the n_queries != 1 case.
     n_elements = [n_shots + x for x in cnt_query]
     # Create paired dataset
     paired_data = PairedDataset(subsets, n_elements=n_elements, max_iters=max_iters, same=False,
