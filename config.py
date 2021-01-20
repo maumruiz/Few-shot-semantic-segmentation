@@ -12,7 +12,7 @@ from sacred.utils import apply_backspaces_and_linefeeds
 sacred.SETTINGS['CONFIG']['READ_ONLY_CONFIG'] = False
 sacred.SETTINGS.CAPTURE_MODE = 'no'
 
-ex = Experiment('PANet Extension')
+ex = Experiment('PANetExt')
 ex.captured_out_filter = apply_backspaces_and_linefeeds
 
 source_folders = ['.', './dataloaders', './models', './util']
@@ -28,7 +28,7 @@ def cfg():
     seed = 1234
     cuda_visable = '0, 1, 2, 3, 4, 5, 6, 7'
     gpu_id = 0
-    mode = 'test' # 'train' or 'test'
+    mode = 'train' # 'train' or 'test'
 
 
     if mode == 'train':
