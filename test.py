@@ -141,6 +141,9 @@ def main(_run, _config, _log):
             _log.info(f'meanIoU_binary: {meanIoU_binary}')
 
             _log.info('Exporting features CSV')
+            cols = list(features_df)
+            cols = [cols[-1]] + cols[:-1]
+            features_df = features_df[cols]
             features_df.to_csv(f'{_run.observers[0].dir}/features/features_run_{run+1}.csv', index=False)
 
     classIoU, classIoU_std, meanIoU, meanIoU_std = metric.get_mIoU(labels=sorted(labels))
