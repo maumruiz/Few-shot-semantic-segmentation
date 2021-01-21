@@ -147,7 +147,7 @@ def main(_run, _config, _log):
     classIoU_binary, classIoU_std_binary, meanIoU_binary, meanIoU_std_binary = metric.get_mIoU_binary()
 
     _log.info('###### Saving features visualization ######')
-    all_fts = pd.concat([pd.read_csv(f'features_run_{run+1}.csv') for run in range(_config['n_runs'])])
+    all_fts = pd.concat([pd.read_csv(f'{_run.observers[0].dir}/features/features_run_{run+1}.csv') for run in range(_config['n_runs'])])
     # Umap
     embedding = umap.UMAP().fit_transform(all_fts.iloc[:, 1:])
     plt.figure(figsize=(12,12))
@@ -158,7 +158,7 @@ def main(_run, _config, _log):
                 cmap='tab20',
                 s=5)
     plt.axis('off')
-    plt.savefig('Umap_fts.png')
+    plt.savefig(f'{_run.observers[0].dir}/features/Umap_fts.png')
 
     # TSNE
     tsne = TSNE(n_components=2, random_state=10).fit_transform(all_fts.iloc[:, 1:])
@@ -170,7 +170,7 @@ def main(_run, _config, _log):
                 cmap='tab20',
                 s=5)
     plt.axis('off')
-    plt.savefig('TSNE_fts.png')
+    plt.savefig(f'{_run.observers[0].dir}/features/TSNE_fts.png')
 
 
     _log.info('----- Final Result -----')
