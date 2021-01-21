@@ -5,6 +5,10 @@ import shutil
 import tqdm
 import numpy as np
 import pandas as pd
+import umap
+import matplotlib.pyplot as plt
+from sklearn.manifold import TSNE
+
 import torch
 import torch.optim
 import torch.nn as nn
@@ -142,6 +146,33 @@ def main(_run, _config, _log):
     classIoU, classIoU_std, meanIoU, meanIoU_std = metric.get_mIoU(labels=sorted(labels))
     classIoU_binary, classIoU_std_binary, meanIoU_binary, meanIoU_std_binary = metric.get_mIoU_binary()
 
+    _log.info('###### Saving features visualization ######')
+    all_fts = pd.concat([pd.read_csv(f'features_run_{run+1}.csv') for run in range(_config['n_runs'])])
+    # Umap
+    embedding = umap.UMAP().fit_transform(all_fts.iloc[:, 1:])
+    plt.figure(figsize=(12,12))
+    plt.scatter(embedding[:, 0], embedding[:, 1], 
+                c=all_fts.iloc[:, 0], 
+                edgecolor='none', 
+                alpha=0.80,
+                cmap='tab20',
+                s=5)
+    plt.axis('off')
+    plt.savefig('Umap_fts.png')
+
+    # TSNE
+    tsne = TSNE(n_components=2, random_state=10).fit_transform(all_fts.iloc[:, 1:])
+    plt.figure(figsize=(12,12))
+    plt.scatter(embedding[:, 0], embedding[:, 1], 
+                c=all_fts.iloc[:, 0], 
+                edgecolor='none', 
+                alpha=0.80,
+                cmap='tab20',
+                s=5)
+    plt.axis('off')
+    plt.savefig('TSNE_fts.png')
+
+
     _log.info('----- Final Result -----')
     _run.log_scalar('final_classIoU', classIoU.tolist())
     _run.log_scalar('final_classIoU_std', classIoU_std.tolist())
@@ -159,3 +190,5 @@ def main(_run, _config, _log):
     _log.info(f'classIoU_binary std: {classIoU_std_binary}')
     _log.info(f'meanIoU_binary mean: {meanIoU_binary}')
     _log.info(f'meanIoU_binary std: {meanIoU_std_binary}')
+
+
