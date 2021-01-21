@@ -165,6 +165,7 @@ def main(_run, _config, _log):
 
     # TSNE
     tsne = TSNE(n_components=2, random_state=10).fit_transform(all_fts.iloc[:, 1:])
+    plt.clf()
     plt.figure(figsize=(12,12))
     plt.scatter(embedding[:, 0], embedding[:, 1], 
                 c=all_fts.iloc[:, 0], 
