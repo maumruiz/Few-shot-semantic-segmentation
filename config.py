@@ -28,8 +28,8 @@ def cfg():
     seed = 1234
     cuda_visable = '0, 1, 2, 3, 4, 5, 6, 7'
     gpu_id = 0
-    mode = 'train' # 'train' or 'test'
-
+    mode = 'train' # 'train' or 'test' or 'visualize
+    label_sets = None
 
     if mode == 'train':
         dataset = 'VOC'  # 'VOC' or 'COCO'
@@ -84,12 +84,23 @@ def cfg():
         # Set task config from the snapshot string
         task = {
             'n_ways': int(re.search("[0-9]+way", snapshot).group(0)[:-3]),
-            # 'n_ways': 1,
             'n_shots': int(re.search("[0-9]+shot", snapshot).group(0)[:-4]),
-            # 'n_shots': 5,
             'n_queries': 1,
         }
+    elif mode == 'visualize':
+        dataset = 'VOC'
+        task = {
+            'n_ways': 1,
+            'n_shots': 1
+        }
 
+        model = {
+            'align': True,
+        }
+        n_runs = 5
+        # Code for visualization works only for four sets right now,
+        #  If we add a dataset with more sets, we should change the visualize script
+        n_sets = 4
     else:
         raise ValueError('Wrong configuration for "mode" !')
 
@@ -97,7 +108,8 @@ def cfg():
     exp_str = '_'.join(
         [dataset,]
         + [key for key, value in model.items() if value]
-        + [f'sets_{label_sets}', f'{task["n_ways"]}way_{task["n_shots"]}shot_[{mode}]'])
+        + ([] if label_sets is None else [f'sets_{label_sets}'])
+        + [f'{task["n_ways"]}way_{task["n_shots"]}shot_[{mode}]'])
 
 
     path = {

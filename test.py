@@ -158,8 +158,8 @@ def main(_run, _config, _log):
                 c=all_fts.iloc[:, 0], 
                 edgecolor='none', 
                 alpha=0.80,
-                cmap='Set1',
-                s=5)
+                cmap='Paired',
+                s=10)
     plt.axis('off')
     plt.savefig(f'{_run.observers[0].dir}/features/Umap_fts.png')
 
@@ -171,8 +171,8 @@ def main(_run, _config, _log):
                 c=all_fts.iloc[:, 0], 
                 edgecolor='none', 
                 alpha=0.80,
-                cmap='Set1',
-                s=5)
+                cmap='Paired',
+                s=10)
     plt.axis('off')
     plt.savefig(f'{_run.observers[0].dir}/features/TSNE_fts.png')
 
