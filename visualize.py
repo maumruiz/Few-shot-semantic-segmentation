@@ -34,7 +34,7 @@ def main(_run, _config, _log):
         + [key for key, value in model.items() if value] 
         + [f'sets_{label_set}', f'{task["n_ways"]}way_{task["n_shots"]}shot_[test]']) for label_set in range(_config['n_sets'])]
     for exp_str in exp_strs:
-        last_exp = os.listdir('./runs')[-1]
+        last_exp = os.listdir(f'./runs/{exp_str}')[-1]
         set_dframes.append(
             pd.concat([pd.read_csv(f'./runs/{exp_str}/{last_exp}/features/features_run_{run+1}.csv')
                 for run in range(_config['n_runs'])
