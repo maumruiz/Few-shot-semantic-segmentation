@@ -48,7 +48,7 @@ def main(_run, _config, _log):
 
     for combination in combinations:
         curr_fts = pd.concat([set_dframes[comb] for comb in combination])
-        comb_str = '-'.join(map(str,combnation))
+        comb_str = '-'.join(map(str,combination))
 
         embedding = umap.UMAP().fit_transform(set_df.iloc[:, 1:])
         plt.figure(figsize=(12,12))
