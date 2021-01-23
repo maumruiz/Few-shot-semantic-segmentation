@@ -50,10 +50,10 @@ def main(_run, _config, _log):
         curr_fts = pd.concat([set_dframes[comb] for comb in combination])
         comb_str = '-'.join(map(str,combination))
 
-        embedding = umap.UMAP().fit_transform(set_df.iloc[:, 1:])
+        embedding = umap.UMAP().fit_transform(curr_fts.iloc[:, 1:])
         plt.figure(figsize=(12,12))
         plt.scatter(embedding[:, 0], embedding[:, 1], 
-                    c=set_df.iloc[:, 0], 
+                    c=curr_fts.iloc[:, 0], 
                     edgecolor='none',
                     alpha=0.80,
                     cmap='Paired',
@@ -62,10 +62,10 @@ def main(_run, _config, _log):
         plt.savefig(f'{_run.observers[0].dir}/set_{comb_str}_Umap.png')
 
         # TSNE
-        tsne = TSNE(n_components=2, random_state=10).fit_transform(set_df.iloc[:, 1:])
+        tsne = TSNE(n_components=2, random_state=10).fit_transform(curr_fts.iloc[:, 1:])
         plt.figure(figsize=(12,12))
         plt.scatter(tsne[:, 0], tsne[:, 1], 
-                    c=set_df.iloc[:, 0], 
+                    c=curr_fts.iloc[:, 0], 
                     edgecolor='none', 
                     alpha=0.80,
                     cmap='Paired',
