@@ -20,6 +20,8 @@ def main(_run, _config, _log):
     #     os.makedirs(os.path.dirname(f'{_run.observers[0].dir}/source/{source_file}'),
     #                 exist_ok=True)
     #     _run.observers[0].save_file(source_file, f'source/{source_file}')
+    os.makedirs(f'{_run.observers[0].dir}/TSNE', exist_ok=True)
+    os.makedirs(f'{_run.observers[0].dir}/Umap', exist_ok=True)
     shutil.rmtree(f'{_run.observers[0].basedir}/_sources')
     set_seed(_config['seed'])
 
@@ -59,7 +61,7 @@ def main(_run, _config, _log):
                     cmap='Paired',
                     s=10)
         plt.axis('off')
-        plt.savefig(f'{_run.observers[0].dir}/set_{comb_str}_Umap.png')
+        plt.savefig(f'{_run.observers[0].dir}/Umap/set_{comb_str}_Umap.png')
         plt.clf()
 
         # TSNE
@@ -72,7 +74,7 @@ def main(_run, _config, _log):
                     cmap='Paired',
                     s=10)
         plt.axis('off')
-        plt.savefig(f'{_run.observers[0].dir}/set_{comb_str}_TSNE.png')
+        plt.savefig(f'{_run.observers[0].dir}/TSNE/set_{comb_str}_TSNE.png')
         plt.clf()
 
         
