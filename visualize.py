@@ -60,6 +60,7 @@ def main(_run, _config, _log):
                     s=10)
         plt.axis('off')
         plt.savefig(f'{_run.observers[0].dir}/set_{comb_str}_Umap.png')
+        plt.clf()
 
         # TSNE
         tsne = TSNE(n_components=2, random_state=10).fit_transform(curr_fts.iloc[:, 1:])
@@ -72,6 +73,7 @@ def main(_run, _config, _log):
                     s=10)
         plt.axis('off')
         plt.savefig(f'{_run.observers[0].dir}/set_{comb_str}_TSNE.png')
+        plt.clf()
 
         
 
