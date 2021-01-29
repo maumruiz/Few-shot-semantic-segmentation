@@ -156,6 +156,8 @@ def main(_run, _config, _log):
 
     _log.info('###### Saving features visualization ######')
     all_fts = pd.concat([pd.read_csv(f'{_run.observers[0].dir}/features/features_run_{run+1}.csv') for run in range(_config['n_runs'])])
+    all_fts.drop_duplicates(subset=['id'])
+
     # Umap
     embedding = umap.UMAP().fit_transform(all_fts.iloc[:, 2:])
     plt.figure(figsize=(12,12))
