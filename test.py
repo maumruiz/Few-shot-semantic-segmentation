@@ -159,6 +159,7 @@ def main(_run, _config, _log):
     all_fts = all_fts.drop_duplicates(subset=['id'])
 
     # Umap
+    _log.info('### Obtaining Umap visualization ###')
     embedding = umap.UMAP().fit_transform(all_fts.iloc[:, 2:])
     plt.figure(figsize=(12,12))
     plt.scatter(embedding[:, 0], embedding[:, 1], 
@@ -171,6 +172,7 @@ def main(_run, _config, _log):
     plt.savefig(f'{_run.observers[0].dir}/features/Umap_fts.png')
 
     # TSNE
+    _log.info('### Obtaining TSNE visualization ###')
     tsne = TSNE(n_components=2, random_state=10).fit_transform(all_fts.iloc[:, 2:])
     plt.clf()
     plt.figure(figsize=(12,12))

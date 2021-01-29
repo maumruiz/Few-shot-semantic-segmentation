@@ -50,12 +50,14 @@ def main(_run, _config, _log):
 
     for combination in combinations:
         curr_fts = pd.concat([set_dframes[comb] for comb in combination])
+        curr_fts = curr_fts.drop_duplicates(subset=['id'])
         comb_str = '-'.join(map(str,combination))
 
-        embedding = umap.UMAP().fit_transform(curr_fts.iloc[:, 1:])
+        _log.info(f'### Obtaining Umap for label sets {comb_str} ###')
+        embedding = umap.UMAP().fit_transform(curr_fts.iloc[:, 2:])
         plt.figure(figsize=(12,12))
         plt.scatter(embedding[:, 0], embedding[:, 1], 
-                    c=curr_fts.iloc[:, 0], 
+                    c=curr_fts.iloc[:, 1], 
                     edgecolor='none',
                     alpha=0.80,
                     cmap='Paired',
@@ -65,10 +67,11 @@ def main(_run, _config, _log):
         plt.clf()
 
         # TSNE
-        tsne = TSNE(n_components=2, random_state=10).fit_transform(curr_fts.iloc[:, 1:])
+        _log.info(f'### Obtaining TSNE for label sets {comb_str} ###')
+        tsne = TSNE(n_components=2, random_state=10).fit_transform(curr_fts.iloc[:, 2:])
         plt.figure(figsize=(12,12))
         plt.scatter(tsne[:, 0], tsne[:, 1], 
-                    c=curr_fts.iloc[:, 0], 
+                    c=curr_fts.iloc[:, 1], 
                     edgecolor='none', 
                     alpha=0.80,
                     cmap='Paired',
