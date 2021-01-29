@@ -145,7 +145,7 @@ def main(_run, _config, _log):
             _log.info(f'meanIoU_binary: {meanIoU_binary}')
 
             _log.info('Exporting features CSV')
-            features_df.drop_duplicates(subset=['id'])
+            features_df = features_df.drop_duplicates(subset=['id'])
             cols = list(features_df)
             cols = [cols[-1], cols[-2]] + cols[:-2]
             features_df = features_df[cols]
@@ -156,7 +156,7 @@ def main(_run, _config, _log):
 
     _log.info('###### Saving features visualization ######')
     all_fts = pd.concat([pd.read_csv(f'{_run.observers[0].dir}/features/features_run_{run+1}.csv') for run in range(_config['n_runs'])])
-    all_fts.drop_duplicates(subset=['id'])
+    all_fts = all_fts.drop_duplicates(subset=['id'])
 
     # Umap
     embedding = umap.UMAP().fit_transform(all_fts.iloc[:, 2:])
