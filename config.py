@@ -28,7 +28,7 @@ def cfg():
     seed = 1234
     cuda_visable = '0, 1, 2, 3, 4, 5, 6, 7'
     gpu_id = 0
-    mode = 'train' # 'train' or 'test' or 'visualize
+    mode = 'test' # 'train' or 'test' or 'visualize
     label_sets = None
 
     if mode == 'train':
@@ -60,7 +60,7 @@ def cfg():
 
     elif mode == 'test':
         notrain = False
-        snapshot = './runs/PANet_VOC_sets_0_1way_1shot_[train]/1/snapshots/30000.pth'
+        snapshot = './runs/PANetExt_VOC_align_sets_0_1way_5shot_[train]/1/snapshots/30000.pth'
         n_runs = 5
         n_steps = 1000
         batch_size = 1

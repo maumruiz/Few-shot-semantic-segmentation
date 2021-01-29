@@ -72,6 +72,8 @@ def fewShot(paired_sample, n_ways, n_shots, cnt_query, coco=False):
     class_ids = [paired_sample[cumsum_idx[i]]['basic_class_id'] for i in range(n_ways)]
 
     # support images
+    support_ids = [paired_sample[cumsum_idx[i] + j]['id'] for j in range(n_shots)
+                      for i in range(n_ways)]
     support_images = [[paired_sample[cumsum_idx[i] + j]['image'] for j in range(n_shots)]
                       for i in range(n_ways)]
     support_images_t = [[paired_sample[cumsum_idx[i] + j]['image_t'] for j in range(n_shots)]
@@ -130,7 +132,8 @@ def fewShot(paired_sample, n_ways, n_shots, cnt_query, coco=False):
 
 
     return {'class_ids': class_ids,
-
+            
+            'support_ids': support_ids,
             'support_images_t': support_images_t,
             'support_images': support_images,
             'support_mask': support_mask,

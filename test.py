@@ -99,7 +99,10 @@ def main(_run, _config, _log):
                     label_ids = [coco_cls_ids.index(x) + 1 for x in sample_batched['class_ids']]
                 else:
                     label_ids = list(sample_batched['class_ids'])
-                    
+                
+                support_ids = [[sample_batched['support_ids'][way*_config['task']['n_shots'] + shot][0] 
+                                for shot in range(_config['task']['n_shots'])]
+                                for way in range(_config['task']['n_ways'])]
                 support_images = [[shot.cuda() for shot in way]
                                   for way in sample_batched['support_images']]
 
@@ -124,6 +127,7 @@ def main(_run, _config, _log):
                 for i, label_id in enumerate(label_ids):
                     lbl_df = pd.DataFrame(torch.cat(supp_fts[i]).cpu().numpy())
                     lbl_df['label'] = label_id.item()
+                    lbl_df['id'] = pd.Series(support_ids[i])
                     df_fts.append(lbl_df)
 
                 features_df = pd.concat(df_fts)
@@ -142,7 +146,7 @@ def main(_run, _config, _log):
 
             _log.info('Exporting features CSV')
             cols = list(features_df)
-            cols = [cols[-1]] + cols[:-1]
+            cols = [cols[-1], cols[-2]] + cols[:-2]
             features_df = features_df[cols]
             features_df.to_csv(f'{_run.observers[0].dir}/features/features_run_{run+1}.csv', index=False)
 
@@ -152,10 +156,10 @@ def main(_run, _config, _log):
     _log.info('###### Saving features visualization ######')
     all_fts = pd.concat([pd.read_csv(f'{_run.observers[0].dir}/features/features_run_{run+1}.csv') for run in range(_config['n_runs'])])
     # Umap
-    embedding = umap.UMAP().fit_transform(all_fts.iloc[:, 1:])
+    embedding = umap.UMAP().fit_transform(all_fts.iloc[:, 2:])
     plt.figure(figsize=(12,12))
     plt.scatter(embedding[:, 0], embedding[:, 1], 
-                c=all_fts.iloc[:, 0], 
+                c=all_fts.iloc[:, 1], 
                 edgecolor='none', 
                 alpha=0.80,
                 cmap='Paired',
@@ -164,11 +168,11 @@ def main(_run, _config, _log):
     plt.savefig(f'{_run.observers[0].dir}/features/Umap_fts.png')
 
     # TSNE
-    tsne = TSNE(n_components=2, random_state=10).fit_transform(all_fts.iloc[:, 1:])
+    tsne = TSNE(n_components=2, random_state=10).fit_transform(all_fts.iloc[:, 2:])
     plt.clf()
     plt.figure(figsize=(12,12))
     plt.scatter(tsne[:, 0], tsne[:, 1], 
-                c=all_fts.iloc[:, 0], 
+                c=all_fts.iloc[:, 1], 
                 edgecolor='none', 
                 alpha=0.80,
                 cmap='Paired',
