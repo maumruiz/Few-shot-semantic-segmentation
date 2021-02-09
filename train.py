@@ -36,7 +36,7 @@ def main(_run, _config, _log):
 
 
     _log.info('###### Create model ######')
-    model = FewShotSeg(pretrained_path=_config['path']['init_path'], cfg=_config['model'])
+    model = FewShotSeg(pretrained_path=_config['path']['init_path'], cfg=_config['model'], task=_config['task'])
     model = nn.DataParallel(model.cuda(), device_ids=[_config['gpu_id'],])
     model.train()
 

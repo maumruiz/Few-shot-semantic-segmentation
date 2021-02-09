@@ -9,6 +9,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from .vgg import Encoder
+from .ctm import CTM
 
 
 class FewShotSeg(nn.Module):
@@ -23,7 +24,7 @@ class FewShotSeg(nn.Module):
         cfg:
             model configurations
     """
-    def __init__(self, in_channels=3, pretrained_path=None, cfg=None):
+    def __init__(self, in_channels=3, pretrained_path=None, cfg=None, task=None):
         super().__init__()
         self.pretrained_path = pretrained_path
         self.config = cfg or {'align': False}
@@ -32,6 +33,9 @@ class FewShotSeg(nn.Module):
         self.encoder = nn.Sequential(OrderedDict([
             ('backbone', Encoder(in_channels, self.pretrained_path)),]))
 
+        if self.config['ctm']:
+            self.ctm = nn.Sequential(OrderedDict([
+                ('CTM', CTM(task['n_ways'], task['n_shots'], task['n_queries'], 512)),]))
 
     def forward(self, supp_imgs, fore_mask, back_mask, qry_imgs):
         """
@@ -70,11 +74,18 @@ class FewShotSeg(nn.Module):
         align_loss = 0
         outputs = []
         for epi in range(batch_size):
-            ###### Extract prototype ######
-            supp_fg_fts = [[self.getFeatures(supp_fts[way, shot, [epi]],
+            task_supp_fts = supp_fts[:, :, [epi]]
+            task_qry_fts = qry_fts[:, [epi]]
+
+            # CTM module
+            if self.config['ctm']:
+                task_supp_fts, task_qry_fts = self.ctm(task_supp_fts, task_qry_fts)
+
+            ###### Extract segmented features ######
+            supp_fg_fts = [[self.getFeatures(task_supp_fts[way, shot, [0]],
                                              fore_mask[way, shot, [epi]])
                             for shot in range(n_shots)] for way in range(n_ways)]
-            supp_bg_fts = [[self.getFeatures(supp_fts[way, shot, [epi]],
+            supp_bg_fts = [[self.getFeatures(task_supp_fts[way, shot, [0]],
                                              back_mask[way, shot, [epi]])
                             for shot in range(n_shots)] for way in range(n_ways)]
 
@@ -83,13 +94,13 @@ class FewShotSeg(nn.Module):
 
             ###### Compute the distance ######
             prototypes = [bg_prototype,] + fg_prototypes
-            dist = [self.calDist(qry_fts[:, epi], prototype) for prototype in prototypes]
+            dist = [self.calDist(task_qry_fts[:, 0], prototype) for prototype in prototypes]
             pred = torch.stack(dist, dim=1)  # N x (1 + Wa) x H' x W'
             outputs.append(F.interpolate(pred, size=img_size, mode='bilinear'))
 
             ###### Prototype alignment loss ######
             if self.config['align'] and self.training:
-                align_loss_epi = self.alignLoss(qry_fts[:, epi], pred, supp_fts[:, :, epi],
+                align_loss_epi = self.alignLoss(task_qry_fts[:, 0], pred, task_supp_fts[:, :, 0],
                                                 fore_mask[:, :, epi], back_mask[:, :, epi])
                 align_loss += align_loss_epi
 

@@ -28,7 +28,7 @@ def cfg():
     seed = 1234
     cuda_visable = '0, 1, 2, 3, 4, 5, 6, 7'
     gpu_id = 0
-    mode = 'test' # 'train' or 'test' or 'visualize
+    mode = 'train' # 'train' or 'test' or 'visualize
     label_sets = None
 
     if mode == 'train':
@@ -44,11 +44,12 @@ def cfg():
 
         model = {
             'align': True,
+            'ctm': False,
         }
 
         task = {
             'n_ways': 1,
-            'n_shots': 1,
+            'n_shots': 5,
             'n_queries': 1,
         }
 
