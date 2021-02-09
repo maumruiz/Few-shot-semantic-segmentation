@@ -108,9 +108,10 @@ def cfg():
 
     exp_str = '_'.join(
         [dataset,]
+        + [f'[{mode}]']
         + [key for key, value in model.items() if value]
+        + [f'{task["n_ways"]}way_{task["n_shots"]}shot'])
         + ([] if label_sets is None else [f'sets_{label_sets}'])
-        + [f'{task["n_ways"]}way_{task["n_shots"]}shot_[{mode}]'])
 
 
     path = {
