@@ -69,7 +69,7 @@ def main(_run, _config, _log):
         for run in range(_config['n_runs']):
             _log.info(f'### Run {run + 1} ###')
             set_seed(_config['seed'] + run)
-            features_df = []
+            features_dfs = []
 
             _log.info(f'### Load data ###')
             dataset = make_data(
@@ -126,7 +126,7 @@ def main(_run, _config, _log):
                     lbl_df = pd.DataFrame(torch.cat(supp_fts[i]).cpu().numpy())
                     lbl_df['label'] = label_id.item()
                     lbl_df['id'] = pd.Series(support_ids[i])
-                    features_df.append(lbl_df)
+                    features_dfs.append(lbl_df)
                 
 
             classIoU, meanIoU = metric.get_mIoU(labels=sorted(labels), n_run=run)
@@ -142,7 +142,7 @@ def main(_run, _config, _log):
             _log.info(f'meanIoU_binary: {meanIoU_binary}')
 
             _log.info('### Exporting features CSV')
-            features_df = pd.concat(df_fts)
+            features_df = pd.concat(features_dfs)
             features_df = features_df.drop_duplicates(subset=['id'])
             cols = list(features_df)
             cols = [cols[-1], cols[-2]] + cols[:-2]
