@@ -28,8 +28,9 @@ def cfg():
     seed = 1234
     cuda_visable = '0, 1, 2, 3, 4, 5, 6, 7'
     gpu_id = 0
-    mode = 'train' # 'train' or 'test' or 'visualize
+    mode = 'visualize' # 'train' or 'test' or 'visualize
     label_sets = None
+    details = 'Base PANet configuration'
 
     if mode == 'train':
         dataset = 'VOC'  # 'VOC' or 'COCO'
@@ -65,6 +66,7 @@ def cfg():
         n_runs = 5
         n_steps = 1000
         batch_size = 1
+        train_seed = seed  # To log which seed was used in the training phase
 
         # Set dataset config from the snapshot string
         if 'VOC' in snapshot:
@@ -89,10 +91,12 @@ def cfg():
             'n_queries': 1,
         }
     elif mode == 'visualize':
+        experiment_id = 'last'
         dataset = 'VOC'
         task = {
             'n_ways': 1,
-            'n_shots': 1
+            'n_shots': 1,
+            'n_queries': 1,
         }
 
         model = {
@@ -102,6 +106,7 @@ def cfg():
         # Code for visualization works only for four sets right now,
         #  If we add a dataset with more sets, we should change the visualize script
         n_sets = 4
+        train_seed = seed
     else:
         raise ValueError('Wrong configuration for "mode" !')
 
@@ -110,8 +115,8 @@ def cfg():
         [dataset,]
         + [f'[{mode}]']
         + [key for key, value in model.items() if value]
-        + [f'{task["n_ways"]}way_{task["n_shots"]}shot'])
-        + ([] if label_sets is None else [f'sets_{label_sets}'])
+        + [f'{task["n_ways"]}way_{task["n_shots"]}shot']
+        + ([] if label_sets is None else [f'split{label_sets}']))
 
 
     path = {

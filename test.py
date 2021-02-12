@@ -5,9 +5,6 @@ import shutil
 import tqdm
 import numpy as np
 import pandas as pd
-import umap
-import matplotlib.pyplot as plt
-from sklearn.manifold import TSNE
 
 import torch
 import torch.optim
@@ -22,6 +19,7 @@ from dataloaders.transforms import ToTensorNormalize
 from dataloaders.transforms import Resize
 from util.metric import Metric
 from util.utils import set_seed, CLASS_LABELS
+from util.visual import plot_umap, plot_tsne
 from config import ex
 
 
@@ -71,7 +69,7 @@ def main(_run, _config, _log):
         for run in range(_config['n_runs']):
             _log.info(f'### Run {run + 1} ###')
             set_seed(_config['seed'] + run)
-            features_df = pd.DataFrame()
+            features_df = []
 
             _log.info(f'### Load data ###')
             dataset = make_data(
@@ -123,14 +121,13 @@ def main(_run, _config, _log):
                               np.array(query_labels[0].cpu()),
                               labels=label_ids, n_run=run)
                 
-                df_fts = [features_df]
+                # Save features row
                 for i, label_id in enumerate(label_ids):
                     lbl_df = pd.DataFrame(torch.cat(supp_fts[i]).cpu().numpy())
                     lbl_df['label'] = label_id.item()
                     lbl_df['id'] = pd.Series(support_ids[i])
-                    df_fts.append(lbl_df)
-
-                features_df = pd.concat(df_fts)
+                    features_df.append(lbl_df)
+                
 
             classIoU, meanIoU = metric.get_mIoU(labels=sorted(labels), n_run=run)
             classIoU_binary, meanIoU_binary = metric.get_mIoU_binary(n_run=run)
@@ -144,7 +141,8 @@ def main(_run, _config, _log):
             _log.info(f'classIoU_binary: {classIoU_binary}')
             _log.info(f'meanIoU_binary: {meanIoU_binary}')
 
-            _log.info('Exporting features CSV')
+            _log.info('### Exporting features CSV')
+            features_df = pd.concat(df_fts)
             features_df = features_df.drop_duplicates(subset=['id'])
             cols = list(features_df)
             cols = [cols[-1], cols[-2]] + cols[:-2]
@@ -158,32 +156,11 @@ def main(_run, _config, _log):
     all_fts = pd.concat([pd.read_csv(f'{_run.observers[0].dir}/features/features_run_{run+1}.csv') for run in range(_config['n_runs'])])
     all_fts = all_fts.drop_duplicates(subset=['id'])
 
-    # Umap
     _log.info('### Obtaining Umap visualization ###')
-    embedding = umap.UMAP().fit_transform(all_fts.iloc[:, 2:])
-    plt.figure(figsize=(12,12))
-    plt.scatter(embedding[:, 0], embedding[:, 1], 
-                c=all_fts.iloc[:, 1], 
-                edgecolor='none', 
-                alpha=0.80,
-                cmap='Paired',
-                s=10)
-    plt.axis('off')
-    plt.savefig(f'{_run.observers[0].dir}/features/Umap_fts.png')
+    plot_umap(all_fts, f'{_run.observers[0].dir}/features/Umap_fts.png')
 
-    # TSNE
     _log.info('### Obtaining TSNE visualization ###')
-    tsne = TSNE(n_components=2, random_state=10).fit_transform(all_fts.iloc[:, 2:])
-    plt.clf()
-    plt.figure(figsize=(12,12))
-    plt.scatter(tsne[:, 0], tsne[:, 1], 
-                c=all_fts.iloc[:, 1], 
-                edgecolor='none', 
-                alpha=0.80,
-                cmap='Paired',
-                s=10)
-    plt.axis('off')
-    plt.savefig(f'{_run.observers[0].dir}/features/TSNE_fts.png')
+    plot_tsne(all_fts, f'{_run.observers[0].dir}/features/TSNE_fts.png')
 
 
     _log.info('----- Final Result -----')

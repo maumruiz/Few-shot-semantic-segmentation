@@ -49,7 +49,7 @@ class CTM(nn.Module):
         in_channels:
             number of input channels
     """
-    def __init__(self, n_way, n_shot, n_queries, in_channels=3, pretrained_path=None):
+    def __init__(self, n_way, n_shot, n_queries, in_channels=512, pretrained_path=None):
         super().__init__()
         
         # TODO: Try other network combinations: Using resnet block, changing d2, d3, m2, m3
