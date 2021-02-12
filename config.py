@@ -78,7 +78,7 @@ def cfg():
 
         # Set model config from the snapshot string
         model = {}
-        for key in ['align',]:
+        for key in ['align', 'ctm']:
             model[key] = key in snapshot
 
         # Set label_sets from the snapshot string
