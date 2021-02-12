@@ -62,7 +62,7 @@ def cfg():
 
     elif mode == 'test':
         notrain = False
-        snapshot = './runs/PANetExt_VOC_align_sets_0_1way_5shot_[train]/1/snapshots/30000.pth'
+        snapshot = './runs/PANetExt_VOC_[train]_align_1way_5shot_split0/1/snapshots/30000.pth'
         n_runs = 5
         n_steps = 1000
         batch_size = 1
@@ -82,7 +82,7 @@ def cfg():
             model[key] = key in snapshot
 
         # Set label_sets from the snapshot string
-        label_sets = int(snapshot.split('_sets_')[1][0])
+        label_sets = int(snapshot.split('_split')[1][0])
 
         # Set task config from the snapshot string
         task = {
